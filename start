@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -Eeo pipefail
+set -Eemo pipefail
 
 docker-entrypoint.sh postgres > /dev/null 2>&1 &
 LOCKFILE=$PGDATA/postmaster.pid
@@ -19,12 +19,6 @@ then
     su -c evt-pg-create-db postgres
 fi
 
-kill -INT $(head -1 $LOCKFILE)
+fg %1
 
-until [ ! -f $LOCKFILE ]; do
-    echo "Waiting for postgres server to shutdown"
-    sleep 1
-done
-
-docker-entrypoint.sh postgres
 exec "$@"
